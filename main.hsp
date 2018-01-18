@@ -1,0 +1,98 @@
+
+// マクロ定義（ウィンドウバッファ）
+#enum IDWindow_PlayerSub = 0
+#enum IDImage_Start
+#enum IDImage_Stop
+#enum IDImage_Back
+#enum IDImage_Next
+#enum IDImage_Default
+#enum IDImage_Thumbnail
+
+// 使用するライブラリ
+#include "vAudio.as"
+#include "lib.hsp"
+
+// コマンド
+	oncmd gosub *Label_MouseClick,	0x0201
+	oncmd gosub *Label_MoveMouse,		0x0200
+	oncmd gosub *Label_Exit,				0x0010
+
+// 画像のロード
+	buffer IDImage_Start			:picload "image/start.bmp"
+	buffer IDImage_Stop				:picload "image/stop.bmp"
+	buffer IDImage_Back				:picload "image/back.bmp"
+	buffer IDImage_Next				:picload "image/next.bmp"
+	buffer IDImage_Default		:picload "test/th.jpg";"image/thumbnail.bmp"
+	buffer IDImage_Thumbnail
+
+// 背景画像の生成
+	gsel IDImage_Thumbnail
+		gmode 0,256,256
+		pos 0,0:gcopy IDImage_Default
+		gmode 1,256,256:repeat 3:bokasi:loop
+
+// ウィンドウを作る
+	bgscr IDWindow_PlayerSub,256,256
+	;screen 0,256,256
+	sendmsg hwnd,0x000C,,"MusicPlayer 6"
+
+	gosub *Label_DrawWindow
+
+	stop
+
+// 再生ウィンドウの描画
+*Label_DrawWindow
+
+	redraw 0
+
+	// 背景
+	gmode 0,256,256
+	pos 0,0:gcopy IDImage_Thumbnail
+
+	// ボタン
+	color 0:gmode 4,64,64,128
+	pos 128-32,128-32-16:gcopy IDImage_Start
+	color 0:gmode 4,32,32,128
+	pos 128-16-72,128-16-16:gcopy IDImage_Back
+	pos 128-16+72,128-16-16:gcopy IDImage_Next
+
+	// 文字表示
+	font "游ゴシック",20,1:color 0
+	pos 128,200:ctmes "トロイメライ",1
+	font "游ゴシック",12,1:color 0
+	pos 128,220:ctmes "少女フラクタル",1
+
+	// 再生バー
+	color 255,255,255:boxf 0,251,256,256
+	color 0:boxl 0,251,256,256
+
+	// 終了ボタン
+	if mousex == limit(mousex,256-50,256) && mousey == limit(mousey,0,30){
+		color 240,20,20:boxf 256-50,0,256,30
+		font "游ゴシック",22:color 255,255,255
+		pos 256-25,15:tmes "×"
+	}
+
+	redraw 1
+	
+	return
+
+// マウス
+*Label_MouseClick
+	if mousex == limit(mousex,256-50,256) && mousey == limit(mousey,0,30):gosub *Label_Exit
+	return
+
+// ウインドウを動かす
+*Label_MoveWindow
+	sendmsg hwnd,0x00A1,2,0
+	return
+
+// マウス移動時
+*Label_MoveMouse
+	gosub *Label_DrawWindow
+	gosub *Label_MoveWindow
+	return
+
+// 終了
+*Label_Exit
+	end
