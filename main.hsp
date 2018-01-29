@@ -9,7 +9,7 @@
 #enum IDImage_Thumbnail
 
 // 使用するライブラリ
-#include "vAudio.as"
+#include "vAudio.hsp"
 #include "lib.hsp"
 
 // コマンド
