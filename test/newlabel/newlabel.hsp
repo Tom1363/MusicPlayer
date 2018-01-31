@@ -1,0 +1,54 @@
+message = "" // メッセージ
+
+// レベル1のステージ読み込み処理を呼び出す
+gosub *start
+
+goto *main
+
+*start
+    message = "こんにちは。▼"
+
+    newlab nextmessage, 1: return
+
+    message = "こんにちは。\nここはハジメノ村さ。▼"
+
+    newlab nextmessage, 1: return
+
+    message = "僕は何の変哲もない村人。▼"
+
+    newlab nextmessage, 1: return
+
+    message = "君とは仲良くなれそうだ、うちに寄って行かない？▼"
+
+    newlab nextmessage, 1: return
+
+    message = "みたいな感じです。▼"
+
+    newlab nextmessage, 1: return
+stop
+
+*main
+
+    redraw 0
+
+    // 背景塗りつぶし
+    hsvcolor 100, 200, 50
+    boxf
+
+    // 文字表示
+    hsvcolor 100, 200, 230
+    pos 100, 100
+    mes "村人"
+    mes message
+
+    // クリックされたら次のメッセージを読み込む
+    stick key
+    if (key & 256) {
+        gosub nextmessage
+    }
+
+    redraw 1
+
+    await 33
+
+goto *main
