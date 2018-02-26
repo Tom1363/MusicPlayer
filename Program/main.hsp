@@ -1,0 +1,6 @@
+#include "lib.hsp"
+
+#define global TitleMsg		"this is a test program for layout."
+
+	ovscreen 0,800,600
+	title TitleMsg
