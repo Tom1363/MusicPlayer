@@ -1,0 +1,35 @@
+
+	dir = dir_cur
+	dialog "mp3",16	: if stat != 1 : end
+	FileName = refstr
+	exist FileName	: if strsize = -1 : end
+	FileSize = strsize
+	sdim buf,FileSize : bload FileName,buf
+	ID3tag = $41,$50,$49,$43 : PicPos = -1 : MODE = 0
+	
+	repeat limit(FileSize,0,1048576) : cn = cnt
+	if PicPos = -1{
+		repeat length(ID3tag)
+		if peek(buf,cn+cnt) != ID3tag(cnt) : break
+		if cnt = length(ID3tag)-1{
+			PicPos = cn+23 : PicSize = 0
+			repeat 4 : poke PicSize,cnt,peek(buf,cn+7-cnt) :loop
+			PicSize-13
+			if peek(buf,PicPos) = 0 : PicPos++ : PicSize--: MODE = 1
+		}
+		loop
+	}
+	if PicPos != -1 : break
+	await 0
+	loop
+	
+	if PicPos != -1{
+		if MODE = 0 : SaveFile = dir+"\\img.png"
+		if MODE = 1 : SaveFile = dir+"\\img.jpg"
+		exist SaveFile
+		if strsize = -1 : notesel em : notesave SaveFile
+		sdim PicData,PicSize
+		memcpy PicData,buf,PicSize,0,PicPos(0)
+		bsave SaveFile,PicData
+		exec SaveFile,16
+	}else: dialog "イメージファイルが見つかりません。" : end

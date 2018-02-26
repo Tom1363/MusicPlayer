@@ -1,0 +1,5 @@
+
+
+	File = "Cyber Space Å` Night Factory.mp3"
+
+	exec "./getmp3.exe "+File,2
